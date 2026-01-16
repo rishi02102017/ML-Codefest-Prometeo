@@ -1,6 +1,34 @@
-SOLUTION_DOCUMENTATION.md
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
 .DS_Store
+
+# Outputs (generated files)
+outputs/*.csv
 outputs/*.pkl
-.cursor/
+outputs/*.txt
+!outputs/.gitkeep
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Local development
+.env.local
+
+# Documentation (keep local only)
+SOLUTION_DOCUMENTATION.md

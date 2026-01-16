@@ -22,6 +22,7 @@ feedparser>=6.0.10
 # Web Application
 flask>=3.0.0
 flask-cors>=4.0.0
+gunicorn>=21.0.0
 
 # Visualization (for charts)
 plotly>=5.18.0

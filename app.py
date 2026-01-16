@@ -205,12 +205,15 @@ if __name__ == '__main__':
     Path('static/css').mkdir(parents=True, exist_ok=True)
     Path('static/js').mkdir(parents=True, exist_ok=True)
     
+    # Get port from environment variable (for deployment) or default to 8080
+    port = int(os.environ.get('PORT', 8080))
+    debug = os.environ.get('FLASK_DEBUG', 'true').lower() == 'true'
+    
     print("\n" + "="*60)
     print("PROJECT KASSANDRA - Web Server")
     print("="*60)
-    print("Starting server at http://localhost:8080")
-    print("Debug mode: ON (auto-reload enabled)")
+    print(f"Starting server at http://localhost:{port}")
+    print(f"Debug mode: {'ON' if debug else 'OFF'}")
     print("="*60 + "\n")
     
-    # debug=True enables auto-reload when files change
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=debug)
