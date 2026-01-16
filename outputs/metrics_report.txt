@@ -1,0 +1,20 @@
+============================================================
+PROJECT KASSANDRA - PREDICTION METRICS REPORT
+============================================================
+
+Generated: 2026-01-16T12:26:48.072979
+
+EVALUATION METRICS
+----------------------------------------
+total_predictions: 251
+date_range: 2025-01-14 00:00:00 to 2026-01-13 00:00:00
+mae: 32.6672
+rmse: 38.0762
+mape: 13.2470
+max_error: 70.3456
+min_error: 0.4771
+avg_percentage_error: 13.2470
+directional_accuracy: 47.6000
+prediction_bias: -32.5430
+
+============================================================

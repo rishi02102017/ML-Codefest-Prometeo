@@ -1,0 +1,32 @@
+# Project Kassandra - Universal Sentiment Engine
+# Stock Price Prediction with Alternative Data
+
+# Core Data & ML
+yfinance==0.2.40
+yahooquery>=2.4.0
+pandas-datareader>=0.10.0
+pandas>=2.0.0
+numpy>=1.24.0
+scikit-learn>=1.3.0
+xgboost>=2.0.0
+
+# Sentiment & Alternative Data
+pytrends>=4.9.2
+praw>=7.7.1
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+textblob>=0.17.1
+vaderSentiment>=3.3.2
+feedparser>=6.0.10
+
+# Web Application
+flask>=3.0.0
+flask-cors>=4.0.0
+
+# Visualization (for charts)
+plotly>=5.18.0
+
+# Utilities
+python-dateutil>=2.8.2
+pytz>=2023.3
+tqdm>=4.66.0

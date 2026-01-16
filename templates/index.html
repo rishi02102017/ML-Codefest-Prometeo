@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Kassandra | Universal Sentiment Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.1.1"></script>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-text">KASSANDRA</span>
+                <span class="logo-subtitle">Sentiment Engine</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-section="dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="#" class="nav-item" data-section="predictions">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 20V10"></path>
+                        <path d="M18 20V4"></path>
+                        <path d="M6 20v-4"></path>
+                    </svg>
+                    Prediction Log
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="status-indicator" id="systemStatus">
+                    <span class="status-dot idle"></span>
+                    <span class="status-text">System Idle</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1 class="page-title">Market Intelligence Dashboard</h1>
+                    <p class="page-subtitle">Real-time stock prediction with sentiment analysis</p>
+                </div>
+                <div class="header-right">
+                    <div class="timeline-info">
+                        <span class="timeline-label">Data Period</span>
+                        <span class="timeline-value">15 Jan 2021 - 15 Jan 2026</span>
+                    </div>
+                    <div class="timestamp" id="lastUpdate">
+                        <span class="timestamp-label">Last Updated</span>
+                        <span class="timestamp-value">--:--:--</span>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Configuration Panel -->
+            <section class="config-panel">
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label for="tickerInput">Stock Ticker</label>
+                        <input type="text" id="tickerInput" value="TSLA" placeholder="e.g., TSLA, AAPL">
+                    </div>
+                    <div class="config-item">
+                        <label for="startDate">Start Date</label>
+                        <input type="date" id="startDate">
+                    </div>
+                    <div class="config-item">
+                        <label for="endDate">End Date</label>
+                        <input type="date" id="endDate">
+                    </div>
+                    <div class="config-item config-action">
+                        <button id="runPipeline" class="btn-primary">
+                            <span class="btn-text">Run Analysis</span>
+                            <span class="btn-loader" style="display: none;">
+                                <svg class="spinner" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="31.4 31.4" stroke-linecap="round"></circle>
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Dashboard Section -->
+            <section class="dashboard-section" id="dashboardSection">
+                <!-- Prediction Hero -->
+                <div class="prediction-hero" id="predictionHero">
+                    <div class="prediction-main">
+                        <div class="prediction-label">Next Day Predicted Close</div>
+                        <div class="prediction-value" id="predictedPrice">--</div>
+                        <div class="prediction-change" id="predictedChange">
+                            <span class="change-value">--</span>
+                            <span class="change-percent">(--)</span>
+                        </div>
+                    </div>
+                    <div class="prediction-signal" id="signalBadge">
+                        <span class="signal-text">WAITING</span>
+                    </div>
+                    <div class="prediction-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Confidence</span>
+                            <span class="meta-value" id="confidenceValue">--</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Last Close</span>
+                            <span class="meta-value" id="lastCloseValue">--</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Metrics Grid -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">MAE</span>
+                            <span class="metric-unit">USD</span>
+                        </div>
+                        <div class="metric-value" id="maeValue">--</div>
+                        <div class="metric-description">Mean Absolute Error</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">RMSE</span>
+                            <span class="metric-unit">USD</span>
+                        </div>
+                        <div class="metric-value" id="rmseValue">--</div>
+                        <div class="metric-description">Root Mean Square Error</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">MAPE</span>
+                            <span class="metric-unit">%</span>
+                        </div>
+                        <div class="metric-value" id="mapeValue">--</div>
+                        <div class="metric-description">Mean Absolute % Error</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">R²</span>
+                            <span class="metric-unit">score</span>
+                        </div>
+                        <div class="metric-value" id="r2Value">--</div>
+                        <div class="metric-description">Coefficient of Determination</div>
+                    </div>
+                </div>
+                
+                <!-- Charts Row -->
+                <div class="charts-row">
+                    <div class="chart-container large">
+                        <div class="chart-header">
+                            <h3>Price History</h3>
+                            <div class="chart-controls">
+                                <button class="chart-btn active" data-range="30">1M</button>
+                                <button class="chart-btn" data-range="90">3M</button>
+                                <button class="chart-btn" data-range="180">6M</button>
+                                <button class="chart-btn" data-range="365">1Y</button>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="priceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sentiment & Market Data -->
+                <div class="data-row">
+                    <div class="data-panel">
+                        <h3 class="panel-title">Sentiment Indicators</h3>
+                        <div class="sentiment-grid">
+                            <div class="sentiment-item">
+                                <div class="sentiment-label">News Sentiment</div>
+                                <div class="sentiment-bar-container">
+                                    <div class="sentiment-bar" id="newsSentimentBar"></div>
+                                </div>
+                                <div class="sentiment-value" id="newsSentimentValue">--</div>
+                            </div>
+                            <div class="sentiment-item">
+                                <div class="sentiment-label">Reddit Sentiment</div>
+                                <div class="sentiment-bar-container">
+                                    <div class="sentiment-bar" id="redditSentimentBar"></div>
+                                </div>
+                                <div class="sentiment-value" id="redditSentimentValue">--</div>
+                            </div>
+                            <div class="sentiment-item">
+                                <div class="sentiment-label">Google Trends</div>
+                                <div class="sentiment-bar-container">
+                                    <div class="sentiment-bar" id="trendsSentimentBar"></div>
+                                </div>
+                                <div class="sentiment-value" id="trendsValue">--</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="data-panel">
+                        <h3 class="panel-title">Market Data</h3>
+                        <div class="market-grid">
+                            <div class="market-item">
+                                <span class="market-label">Open</span>
+                                <span class="market-value" id="marketOpen">--</span>
+                            </div>
+                            <div class="market-item">
+                                <span class="market-label">High</span>
+                                <span class="market-value" id="marketHigh">--</span>
+                            </div>
+                            <div class="market-item">
+                                <span class="market-label">Low</span>
+                                <span class="market-value" id="marketLow">--</span>
+                            </div>
+                            <div class="market-item">
+                                <span class="market-label">Close</span>
+                                <span class="market-value" id="marketClose">--</span>
+                            </div>
+                            <div class="market-item full-width">
+                                <span class="market-label">Volume</span>
+                                <span class="market-value" id="marketVolume">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="data-panel">
+                        <h3 class="panel-title">Model Ensemble</h3>
+                        <div class="model-grid" id="modelPredictions">
+                            <div class="model-item">
+                                <span class="model-name">XGBoost</span>
+                                <span class="model-value">--</span>
+                            </div>
+                            <div class="model-item">
+                                <span class="model-name">Random Forest</span>
+                                <span class="model-value">--</span>
+                            </div>
+                            <div class="model-item">
+                                <span class="model-name">Gradient Boost</span>
+                                <span class="model-value">--</span>
+                            </div>
+                            <div class="model-item">
+                                <span class="model-name">Ridge</span>
+                                <span class="model-value">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Feature Importance -->
+                <div class="feature-section">
+                    <h3 class="panel-title">Top Feature Importance</h3>
+                    <div class="feature-chart-container">
+                        <canvas id="featureChart"></canvas>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Predictions Log Section -->
+            <section class="predictions-section" id="predictionsSection" style="display: none;">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>Prediction History</h3>
+                        <button class="btn-secondary" id="downloadCSV">Download CSV</button>
+                    </div>
+                    <table class="data-table" id="predictionsTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Actual Price</th>
+                                <th>Predicted Price</th>
+                                <th>Error</th>
+                                <th>Error %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="5" class="empty-state">Run analysis to view predictions</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
